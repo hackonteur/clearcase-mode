@@ -152,7 +152,7 @@
 
 ;;{{{ Version info
 
-(defconst clearcase-version-stamp "ClearCase-version: </main/laptop/166-shr1>")
+(defconst clearcase-version-stamp "ClearCase-version: </main/laptop/166-shr2>")
 (defconst clearcase-version (substring clearcase-version-stamp 19))
 
 (defun clearcase-maintainer-address ()
@@ -597,13 +597,16 @@ recommended to produce unified diffs, when your
 (define-key clearcase-mode-map "\C-xv" clearcase-prefix-map)
 (define-key clearcase-mode-map "\C-x\C-q" 'clearcase-toggle-read-only)
 
+(define-key clearcase-prefix-map "a" 'clearcase-mkelem-current-buffer)
 (define-key clearcase-prefix-map "b" 'clearcase-browse-vtree-current-buffer)
 (define-key clearcase-prefix-map "c" 'clearcase-uncheckout-current-buffer)
 (define-key clearcase-prefix-map "e" 'clearcase-edcs-edit)
 (define-key clearcase-prefix-map "g" 'clearcase-annotate-current-buffer)
-(define-key clearcase-prefix-map "i" 'clearcase-mkelem-current-buffer)
+(define-key clearcase-prefix-map "i" 'clearcase-checkin-current-buffer)
 (define-key clearcase-prefix-map "l" 'clearcase-list-history-current-buffer)
 (define-key clearcase-prefix-map "m" 'clearcase-mkbrtype)
+(define-key clearcase-prefix-map "o" 'clearcase-unreserved-checkout-current-buffer)
+(define-key clearcase-prefix-map "r" 'clearcase-checkout-current-buffer)
 (define-key clearcase-prefix-map "u" 'clearcase-uncheckout-current-buffer)
 (define-key clearcase-prefix-map "v" 'clearcase-next-action-current-buffer)
 (define-key clearcase-prefix-map "w" 'clearcase-what-rule-current-buffer)
@@ -2169,6 +2172,11 @@ is specified, save it."
   (interactive)
   (clearcase-commented-checkout buffer-file-name))
 
+(defun clearcase-unreserved-checkout-current-buffer ()
+  "Checkout the file in the current buffer (unreserved)."
+  (interactive)
+  (clearcase-unreserved-commented-checkout buffer-file-name))
+
 (defun clearcase-checkout-dired-files ()
   "Checkout the selected files."
   (interactive)
@@ -3169,6 +3177,39 @@ a buffer is popped up to accept one."
     ;;
     (clearcase-sync-from-disk file t)))
 
+(defun clearcase-unreserved-commented-checkout (file &optional comment)
+  "Check-out FILE with COMMENT. If the comment is omitted,
+a buffer is popped up to accept one."
+
+  (clearcase-assert-file-ok-to-checkout file)
+
+  (if (and (null comment)
+           (not clearcase-suppress-checkout-comments))
+      ;; If no comment supplied, go and get one...
+      ;;
+      (clearcase-comment-start-entry (file-name-nondirectory file)
+                                     "Enter a checkout comment."
+                                     'clearcase-unreserved-commented-checkout
+                                     (list file)
+                                     (find-file-noselect file))
+
+    ;; ...otherwise perform the operation.
+    ;;
+    (message "Checking out %s..." file)
+    ;; Change buffers to get local value of clearcase-checkin-arguments.
+    ;;
+    (save-excursion
+      (set-buffer (or (find-buffer-visiting file)
+                      (current-buffer)))
+      (clearcase-ct-do-cleartool-command "co"
+                                         file
+                                         comment
+                                         (list "-unreserved" clearcase-checkout-arguments)))
+    (message "Checking out %s...done" file)
+
+    ;; Resync.
+    ;;
+    (clearcase-sync-from-disk file t)))
 
 (defun clearcase-commented-checkout-seq (files &optional comment)
   "Checkout a sequence of FILES. If COMMENT is supplied it will be
@@ -6190,7 +6231,11 @@ that mapped to non-nil."
          :keys nil
          :visible (clearcase-file-ok-to-checkin buffer-file-name)]
 
-        ["Checkout" clearcase-checkout-current-buffer
+        ["Checkout Reserved" clearcase-checkout-current-buffer
+         :keys nil
+         :visible (clearcase-file-ok-to-checkout buffer-file-name)]
+
+        ["Checkout Unreserved" clearcase-unreserved-checkout-current-buffer
          :keys nil
          :visible (clearcase-file-ok-to-checkout buffer-file-name)]
 
@@ -6357,7 +6402,11 @@ that mapped to non-nil."
          :keys nil
          :active (clearcase-file-ok-to-checkin buffer-file-name)]
 
-        ["Checkout" clearcase-checkout-current-buffer
+        ["Checkout Reserved" clearcase-checkout-current-buffer
+         :keys nil
+         :active (clearcase-file-ok-to-checkout buffer-file-name)]
+
+        ["Checkout Unreserved" clearcase-unreserved-checkout-current-buffer
          :keys nil
          :active (clearcase-file-ok-to-checkout buffer-file-name)]
 
