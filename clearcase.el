@@ -2,6 +2,10 @@
 
 ;; Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004, 2006, 2006, 2007 Kevin Esler
 
+;; Branch 'shr' created by Scott Roland <scott@constrainedrandom.com>
+;; GitHub home of 'shr' branch: https://github.com/scottroland/clearcase-mode
+
+;; Branch based on the original clearcase.el file:
 ;; Author: Kevin Esler <kaesler@us.ibm.com>
 ;; Maintainer: Kevin Esler <kaesler@us.ibm.com>
 ;; Keywords: clearcase tools
@@ -148,7 +152,7 @@
 
 ;;{{{ Version info
 
-(defconst clearcase-version-stamp "ClearCase-version: </main/laptop/166>")
+(defconst clearcase-version-stamp "ClearCase-version: </main/laptop/166-shr1>")
 (defconst clearcase-version (substring clearcase-version-stamp 19))
 
 (defun clearcase-maintainer-address ()
@@ -545,24 +549,14 @@ recommended to produce unified diffs, when your
 
 ;;{{{ Global variables
 
-;; Initialize clearcase-pname-sep-regexp according to
-;; directory-sep-char.
-(defvar clearcase-pname-sep-regexp
-  (format "[%s/]"
-          (char-to-string directory-sep-char)))
-
-(defvar clearcase-non-pname-sep-regexp
-  (format "[^%s/]"
-          (char-to-string directory-sep-char)))
-
 ;; Matches any viewtag (without the trailing "/").
 ;;
 (defvar clearcase-viewtag-regexp
   (concat "^"
           clearcase-viewroot
-          clearcase-pname-sep-regexp
+          "[//]"
           "\\("
-          clearcase-non-pname-sep-regexp "*"
+          "[^//]" "*"
           "\\)"
           "$"
           ))
@@ -572,9 +566,9 @@ recommended to produce unified diffs, when your
 (defvar clearcase-vrpath-regexp
   (concat "^"
           clearcase-viewroot
-          clearcase-pname-sep-regexp
+          "[//]"
           "\\("
-          clearcase-non-pname-sep-regexp "*"
+          "[^//]" "*"
           "\\)"
           ))
 
@@ -3569,7 +3563,7 @@ on the directory element itself is listed, not on its contents."
   ;;
   (setq filename (clearcase-path-canonicalise-slashes filename))
   (if (and clearcase-on-mswindows
-           (string-match (concat "^" "[A-Za-z]:" clearcase-pname-sep-regexp "$")
+           (string-match (concat "^" "[A-Za-z]:" "[//]" "$")
                          filename))
       filename
     (clearcase-utl-strip-trailing-slashes filename)))
@@ -4409,7 +4403,7 @@ It doesn't examine the file contents."
                                        ;;
                                        (concat "^"
                                                "[Mm]:"
-                                               clearcase-pname-sep-regexp)))
+                                               "[//]")))
 
 ;; This prevents the clearcase-file-vob-root function from pausing for long periods
 ;; stat-ing /net/host@@
@@ -4683,9 +4677,9 @@ If so, return the viewtag."
      ;;
      ((and clearcase-on-mswindows
            (string-match (concat clearcase-viewroot-drive
-                                 clearcase-pname-sep-regexp
+                                 "[//]"
                                  "\\("
-                                 clearcase-non-pname-sep-regexp "*"
+                                 "[^//]" "*"
                                  "\\)"
                                  )
                          truename))
@@ -5363,11 +5357,11 @@ Intended for use in snapshot views."
 (defvar clearcase-multiple-viewroot-regexp
   (concat "^"
           clearcase-viewroot
-          clearcase-pname-sep-regexp
-          clearcase-non-pname-sep-regexp "+"
+          "[//]"
+          "[^//]" "+"
           "\\("
           clearcase-viewroot
-          clearcase-pname-sep-regexp
+          "[//]"
           "\\)"
           ))
 
