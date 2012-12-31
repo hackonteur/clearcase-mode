@@ -152,7 +152,7 @@
 
 ;;{{{ Version info
 
-(defconst clearcase-version-stamp "ClearCase-version: </main/laptop/166-shr2>")
+(defconst clearcase-version-stamp "ClearCase-version: </main/laptop/166-shr3>")
 (defconst clearcase-version (substring clearcase-version-stamp 19))
 
 (defun clearcase-maintainer-address ()
@@ -618,13 +618,13 @@ recommended to produce unified diffs, when your
 ;; undefining its keybindings for which ClearCase Mode doesn't yet have an
 ;; analogue.
 ;;
-(define-key clearcase-prefix-map "a" 'undefined) ;; vc-update-change-log
-(define-key clearcase-prefix-map "d" 'undefined) ;; vc-directory
-(define-key clearcase-prefix-map "h" 'undefined) ;; vc-insert-headers
-(define-key clearcase-prefix-map "m" 'undefined) ;; vc-merge
-(define-key clearcase-prefix-map "r" 'undefined) ;; vc-retrieve-snapshot
-(define-key clearcase-prefix-map "s" 'undefined) ;; vc-create-snapshot
-(define-key clearcase-prefix-map "t" 'undefined) ;; vc-dired-toggle-terse-mode
+(define-key vc-prefix-map "a" 'undefined) ;; vc-update-change-log
+(define-key vc-prefix-map "d" 'undefined) ;; vc-directory
+(define-key vc-prefix-map "h" 'undefined) ;; vc-insert-headers
+(define-key vc-prefix-map "m" 'undefined) ;; vc-merge
+(define-key vc-prefix-map "r" 'undefined) ;; vc-retrieve-snapshot
+(define-key vc-prefix-map "s" 'undefined) ;; vc-create-snapshot
+(define-key vc-prefix-map "t" 'undefined) ;; vc-dired-toggle-terse-mode
 
 ;; Associate the map and the minor mode
 ;;
