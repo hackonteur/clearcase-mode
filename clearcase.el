@@ -2,8 +2,9 @@
 
 ;; Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004, 2006, 2006, 2007 Kevin Esler
 
-;; Branch 'shr' created by Scott Roland <scott@constrainedrandom.com>
-;; GitHub home of 'shr' branch: https://github.com/scottroland/clearcase-mode
+;; Branch 'shr' created by Scott Roland <scott@hackonteur.com>
+;; GitHub home of 'shr' branch: https://github.com/hackonteur/clearcase-mode
+;; $KnownCompatibility: 23.1+, XEmacs21.4.15+ $
 
 ;; Branch based on the original clearcase.el file:
 ;; Author: Kevin Esler <kaesler@us.ibm.com>
@@ -152,7 +153,7 @@
 
 ;;{{{ Version info
 
-(defconst clearcase-version-stamp "ClearCase-version: </main/laptop/166-shr3>")
+(defconst clearcase-version-stamp "ClearCase-version: </main/laptop/166-shr4>")
 (defconst clearcase-version (substring clearcase-version-stamp 19))
 
 (defun clearcase-maintainer-address ()
@@ -7344,7 +7345,7 @@ its ClearCase servers. Used for a non-LT system."
     ;; If servers are apparently not online, keep the
     ;; buffer around so we can see what lsregion reported.
     ;;
-    (sit-for 0.01); Fix by AJM to prevent kill-buffer claiming process still running
+    (sleep-for 0.01); Fix by AJM to prevent kill-buffer claiming process still running
     (if result
         (kill-buffer buf))
     result))
@@ -7384,7 +7385,7 @@ its ClearCase servers. Used for LT system."
     ;; If servers are apparently not online, keep the
     ;; buffer around so we can see what lssite reported.
     ;;
-    (sit-for 0.01); Fix by AJM to prevent kill-buffer claiming process still running
+    (sleep-for 0.01); Fix by AJM to prevent kill-buffer claiming process still running
     (if result
         (kill-buffer buf))
     result))
